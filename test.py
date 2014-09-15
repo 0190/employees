@@ -3,8 +3,8 @@ import unittest
 from employees import *
 
 Session = sessionmaker()
-engine = create_engine('sqlite:///employees.db', echo=True)
-
+engine = create_engine('sqlite:///test.db', echo=False)
+Base.metadata.create_all(engine)
 
 
 class EmployeesTest(unittest.TestCase):
@@ -28,25 +28,16 @@ class EmployeesTest(unittest.TestCase):
         self.assertEqual(added.name, self.employee_name)
         self.assertEqual(added.position, self.employee_position)
 
-    def test_find_employees_by_name(self):
+    def test_add_skill(self):
         new_employee = Employee(name=self.employee_name, position=self.employee_position)
-        
-        self.session.add(new_employee)
-        self.session.commit()
-
-        found = find_employees_by_name(self.session, self.employee_name)
-
-        self.assertEqual(found[0], new_employee)
-
-    def test_find_employees_by_position(self):
-        new_employee = Employee(name=self.employee_name, position=self.employee_position)
+        skill_name = 'Reading'
 
         self.session.add(new_employee)
         self.session.commit()
 
-        found = find_employees_by_position(self.session, self.employee_position)
+        add_skill(self.session, self.employee_name, skill_name)
 
-        self.assertEqual(found[0], new_employee)
+        self.assertEqual(new_employee.skills[0].skill_name, skill_name)
 
     def test_add_skills(self):
         new_employee = Employee(name=self.employee_name, position=self.employee_position)
@@ -57,10 +48,40 @@ class EmployeesTest(unittest.TestCase):
 
         add_skills(self.session, self.employee_name, skill_list)
 
-        self.assertEqual(new_employee.skills, skill_list)
+        self.assertEqual([skill.skill_name for skill in new_employee.skills], skill_list)
+
+    def test_find_employees_by_name(self):
+        new_employee = Employee(name=self.employee_name, position=self.employee_position)
+        
+        self.session.add(new_employee)
+        self.session.commit()
+
+        found = find_employees_by_name(self.session, self.employee_name)
+
+        self.assertEqual(found, [new_employee])
+
+    def test_find_employees_by_position(self):
+        new_employee = Employee(name=self.employee_name, position=self.employee_position)
+
+        self.session.add(new_employee)
+        self.session.commit()
+
+        found = find_employees_by_position(self.session, self.employee_position)
+
+        self.assertEqual(found, [new_employee])
 
     def test_find_employees_by_skill(self):
-        pass
+        new_employee = Employee(name=self.employee_name, position=self.employee_position)
+
+        skill = 'Reading'
+        new_employee.skills.append(Skill(skill_name=skill))
+
+        self.session.add(new_employee)
+        self.session.commit()
+
+        found = find_employees_by_skill(self.session, skill)
+
+        self.assertEqual(found, [new_employee])
 
 if __name__ == '__main__':
     unittest.main()

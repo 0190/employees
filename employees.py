@@ -39,13 +39,12 @@ def add_employee(session, employee_name, employee_position):
     session.commit()
 
 def add_skill(session, employee_name, skill_name): #fix pls
-    employee = session.query(Employee).filter_by(name=employee_name).first() #better fix .first()
-    skill = session.query(Skill).filter_by(skill_name=skill_name).first()
-    if skill:
+    employee = session.query(Employee).filter_by(name=employee_name).first() #only adds the skill
+    skill = session.query(Skill).filter_by(skill_name=skill_name).first()    #to the first employee
+    if skill:                                                                #with a given name
         employee.skills.append(skill)
     else:
-        print '====================', skill_name
-        employee.skills.append(Skill(skill_name=skill))
+        employee.skills.append(Skill(skill_name=skill_name))
     session.commit()
 
 def add_skills(session, employee_name, skill_list):
@@ -62,4 +61,3 @@ def find_employees_by_position(session, employee_position):
 
 def find_employees_by_skill(session, skill):
     return session.query(Employee).filter(Employee.skills.any(skill_name=skill)).all()
-
