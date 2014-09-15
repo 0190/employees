@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 
 
-engine = create_engine('sqlite:///employees.db', echo=True)
+engine = create_engine('sqlite:///employees.db', echo=False)
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
@@ -21,7 +21,8 @@ class Employee(Base):
     skills = relationship('Skill', secondary=employee_skills, backref='employees')
 
     def __repr__(self):
-        return '<Employee(id = %s, name = %s, position = %s)>' % (self.id, self.name, self.position)
+        return '<Employee(id = %s, name = %s, position = %s, skills = %s)>' % (
+                                                self.id, self.name, self.position, str(self.skills))
 
 class Skill(Base):
     __tablename__ = 'skills'
@@ -37,14 +38,20 @@ def add_employee(session, employee_name, employee_position):
     session.add(Employee(name=employee_name, position=employee_position))
     session.commit()
 
-def add_skills(session, employee_name, skill_list):
-    employee = session.query(Employee).filter_by(name=employee_name).first()
-    for skill_name in skill_list:
-        skill = session.query(Skill).filter_by(skill_name=skill_name).first()
+def add_skill(session, employee_name, skill_name): #fix pls
+    employee = session.query(Employee).filter_by(name=employee_name).first() #better fix .first()
+    skill = session.query(Skill).filter_by(skill_name=skill_name).first()
     if skill:
         employee.skills.append(skill)
     else:
+        print '====================', skill_name
         employee.skills.append(Skill(skill_name=skill))
+    session.commit()
+
+def add_skills(session, employee_name, skill_list):
+    employee = session.query(Employee).filter_by(name=employee_name).first() #better fix .first()
+    for skill_name in skill_list:
+        add_skill(session, employee_name, skill_name)
     session.commit()
 
 def find_employees_by_name(session, employee_name):
@@ -55,5 +62,4 @@ def find_employees_by_position(session, employee_position):
 
 def find_employees_by_skill(session, skill):
     return session.query(Employee).filter(Employee.skills.any(skill_name=skill)).all()
-
 
