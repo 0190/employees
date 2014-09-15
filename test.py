@@ -15,6 +15,7 @@ class EmployeesTest(unittest.TestCase):
     def tearDown(self):
         self.trans.rollback()
         self.session.close()
+        self.connection.close()
 
     def test_add_employee(self):
         employee_name = 'Masha'
