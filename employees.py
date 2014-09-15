@@ -1,11 +1,13 @@
 import sqlalchemy
+import unittest
 from sqlalchemy import create_engine, Column, Integer, String, Table, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 
+
 engine = create_engine('sqlite:///employees.db', echo=True)
-Base = declarative_base()
 Session = sessionmaker(bind=engine)
+Base = declarative_base()
 
 employee_skills = Table('employee_skills', Base.metadata,
                         Column('employee_id', Integer, ForeignKey('employees.id')),
@@ -30,7 +32,6 @@ class Skill(Base):
         return '<Skill(id = %s, skill_name = %s)>' % (self.id, self.skill_name)
   
 Base.metadata.create_all(engine)
-session = Session()
 
 def add_employee(session, employee_name, employee_position):
     session.add(Employee(name=employee_name, position=employee_position))
@@ -47,13 +48,12 @@ def add_skills(session, employee_name, skill_list):
     session.commit()
 
 def find_employees_by_name(session, employee_name):
-    session.query(Employee).filter_by(name='employee_name')
+    return session.query(Employee).filter_by(name=employee_name).all()
 
 def find_employees_by_position(session, employee_position):
-    session.query(Employee).filter_by(position='employee_position')
+    return session.query(Employee).filter_by(position=employee_position).all()
 
 def find_employees_by_skill(session, skill):
-    session.query(Employee).filter(Employee.skills.any(skill_name=skill)).all()
-
+    return session.query(Employee).filter(Employee.skills.any(skill_name=skill)).all()
 
 
