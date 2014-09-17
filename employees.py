@@ -35,23 +35,37 @@ class Skill(Base):
 Base.metadata.create_all(engine)
 
 def add_employee(session, employee_name, employee_position):
-    session.add(Employee(name=employee_name, position=employee_position))
+    employee = Employee(name=employee_name, position=employee_position)
+    session.add(employee)
     session.commit()
+    return employee
 
 def add_skill(session, employee_name, skill_name): #fix pls
-    employee = session.query(Employee).filter_by(name=employee_name).first() #only adds the skill
-    skill = session.query(Skill).filter_by(skill_name=skill_name).first()    #to the first employee
-    if skill:                                                                #with a given name
-        employee.skills.append(skill)
+    employees = session.query(Employee).filter_by(name=employee_name).all()
+    if len(employees) > 1:
+        return None # does nothing if there's more than one employee with that name
     else:
-        employee.skills.append(Skill(skill_name=skill_name))
-    session.commit()
+        employee = employees[0]
+        skill = get_skill(session, skill_name)
+        if skill:
+            employee.skills.append(skill)
+        else:
+            skill = Skill(skill_name=skill_name)
+            employee.skills.append(skill)
+        session.commit()
+        return skill
 
 def add_skills(session, employee_name, skill_list):
-    employee = session.query(Employee).filter_by(name=employee_name).first() #better fix .first()
-    for skill_name in skill_list:
-        add_skill(session, employee_name, skill_name)
+    employees = session.query(Employee).filter_by(name=employee_name).all()
+    if len(employees) > 1:
+        return None # does nothing if there's more than one employee with that name
+    else:
+        for skill_name in skill_list:
+            add_skill(session, employee_name, skill_name)
     session.commit()
+
+def get_skill(session, skill_name):
+    return session.query(Skill).filter_by(skill_name=skill_name).first()
 
 def find_employees_by_name(session, employee_name):
     return session.query(Employee).filter_by(name=employee_name).all()
