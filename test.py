@@ -58,14 +58,12 @@ class EmployeesTest(unittest.TestCase):
         new_employee = add_employee(self.session, self.employee_name, self.employee_position)
 
         found = find_employees_by_name(self.session, self.employee_name)
-
         self.assertEqual(found, [new_employee])
 
     def test_find_employees_by_position(self):
         new_employee = add_employee(self.session, self.employee_name, self.employee_position)
 
         found = find_employees_by_position(self.session, self.employee_position)
-
         self.assertEqual(found, [new_employee])
 
     def test_find_employees_by_skill(self):
@@ -75,7 +73,6 @@ class EmployeesTest(unittest.TestCase):
         new_employee.skills.append(Skill(skill_name=skill))
 
         found = find_employees_by_skill(self.session, skill)
-
         self.assertEqual(found, [new_employee])
 
 if __name__ == '__main__':

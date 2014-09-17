@@ -36,10 +36,8 @@ def add_employee(session, employee_name, employee_position):
     session.commit()
     return employee
 
-def add_skill(session, employee, skill_name): #fix pls
-    skill = get_skill(session, skill_name)
-    if not skill:
-        skill = Skill(skill_name=skill_name)
+def add_skill(session, employee, skill_name):
+    skill = get_skill(session, skill_name) or Skill(skill_name=skill_name)
     employee.skills.append(skill)
     session.commit()
     return skill
