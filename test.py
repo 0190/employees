@@ -32,7 +32,7 @@ class EmployeesTest(unittest.TestCase):
         new_employee = add_employee(self.session, self.employee_name, self.employee_position)
         skill_name = 'Reading'
 
-        add_skill(self.session, self.employee_name, skill_name)
+        add_skill(self.session, new_employee, skill_name)
 
         self.assertEqual(new_employee.skills[0].skill_name, skill_name)
 
@@ -42,7 +42,7 @@ class EmployeesTest(unittest.TestCase):
         self.session.add(Skill(skill_name='Reading'))
         self.session.commit()
 
-        add_skill(self.session, self.employee_name, skill_name)
+        add_skill(self.session, new_employee, skill_name)
 
         self.assertEqual(new_employee.skills[0].skill_name, skill_name)
 
@@ -50,7 +50,7 @@ class EmployeesTest(unittest.TestCase):
         new_employee = add_employee(self.session, self.employee_name, self.employee_position)
         skill_list = ['Reading', 'Sleeping', 'Eating']
 
-        add_skills(self.session, self.employee_name, skill_list)
+        add_skills(self.session, new_employee, skill_list)
 
         self.assertEqual([skill.skill_name for skill in new_employee.skills], skill_list)
 

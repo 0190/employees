@@ -40,28 +40,19 @@ def add_employee(session, employee_name, employee_position):
     session.commit()
     return employee
 
-def add_skill(session, employee_name, skill_name): #fix pls
-    employees = session.query(Employee).filter_by(name=employee_name).all()
-    if len(employees) > 1:
-        return None # does nothing if there's more than one employee with that name
+def add_skill(session, employee, skill_name): #fix pls
+    skill = get_skill(session, skill_name)
+    if skill:
+        employee.skills.append(skill)
     else:
-        employee = employees[0]
-        skill = get_skill(session, skill_name)
-        if skill:
-            employee.skills.append(skill)
-        else:
-            skill = Skill(skill_name=skill_name)
-            employee.skills.append(skill)
-        session.commit()
-        return skill
+        skill = Skill(skill_name=skill_name)
+        employee.skills.append(skill)
+    session.commit()
+    return skill
 
-def add_skills(session, employee_name, skill_list):
-    employees = session.query(Employee).filter_by(name=employee_name).all()
-    if len(employees) > 1:
-        return None # does nothing if there's more than one employee with that name
-    else:
-        for skill_name in skill_list:
-            add_skill(session, employee_name, skill_name)
+def add_skills(session, employee, skill_list):
+    for skill_name in skill_list:
+        add_skill(session, employee, skill_name)
     session.commit()
 
 def get_skill(session, skill_name):
