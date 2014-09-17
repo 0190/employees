@@ -5,8 +5,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship, backref
 
 
-engine = create_engine('sqlite:///employees.db', echo=False)
-Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
 employee_skills = Table('employee_skills', Base.metadata,
@@ -31,8 +29,6 @@ class Skill(Base):
 
     def __repr__(self):
         return '<Skill(id = %s, skill_name = %s)>' % (self.id, self.skill_name)
-  
-Base.metadata.create_all(engine)
 
 def add_employee(session, employee_name, employee_position):
     employee = Employee(name=employee_name, position=employee_position)
